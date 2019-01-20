@@ -1,0 +1,8 @@
+---
+flannel:
+  - kube-flannel.yml
+calico:
+  - rbac-calico.yml
+  - kube-calico.yml
+kubernetesVersion: "{% if packages.kubernetes.version != '' %}-{{ packages.kubernetes.version }}{% endif %}"
+kubectlUser: centos

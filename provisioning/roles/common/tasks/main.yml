@@ -1,0 +1,82 @@
+---
+- debug:
+    msg: "{{ ansible_all_ipv4_addresses }}"
+- name: Modify hosts file
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ item }}"
+  with_items: "{{ hosts }}"
+
+- name: Remove swapfile from /etc/fstab
+  mount:
+    name: swap
+    fstype: swap
+    state: absent
+
+- name: Disable swap
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: Add Docker CE stable repository
+  yum_repository:
+    name: docker-ce-stable
+    description: Docker CE Stable YUM repository
+    baseurl: "{{ repos.docker.baseurl }}"
+    gpgkey: "{{ repos.docker.gpgkey }}"
+    gpgcheck: yes
+
+- name: Install Docker CE - version {{ packages.docker.version }}
+  yum:
+   name: "{{ packages.docker.name }}-{{ packages.docker.version }}"
+   state: present
+   update_cache: true
+
+- name: Start Docker CE service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Disable SELinux
+  command: setenforce 0
+
+- name: Disable SELinux on reboot
+  selinux:
+    state: disabled
+
+- name: Ensure net.bridge.bridge-nf-call-ip6tables is set to 1
+  sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: 1
+    state: present
+
+- name: Ensure net.bridge.bridge-nf-call-iptables is set to 1
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: 1
+    state: present
+
+- name: Add Kubernetes' YUM repository
+  yum_repository:
+    name: Kubernetes
+    description: Kubernetes YUM repository
+    baseurl: "{{ repos.kubernetes.baseurl }}"
+    gpgkey: "{{ repos.kubernetes.gpgkey }}"
+    gpgcheck: yes
+
+- name: Install Kubelet
+  yum:
+    name: "kubelet{{ kubernetesVersion }}"
+    state: present
+    update_cache: true
+
+- name: Install Kubeadm
+  yum:
+    name: "kubeadm{{ kubernetesVersion }}"
+    state: present
+
+- name: Start Kubelet
+  service:
+    name: kubelet
+    enabled: yes
+    state: started

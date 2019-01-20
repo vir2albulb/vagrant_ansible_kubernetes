@@ -1,0 +1,19 @@
+---
+repos:
+  docker:
+    baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+    gpgkey: https://download.docker.com/linux/centos/gpg
+  kubernetes:
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    gpgkey: "https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg"
+
+packages:
+  docker:
+    name: docker-ce
+    version: 18.06.1.ce-3.el7
+  kubernetes:
+    version: ''
+
+network:
+  plugin: 'calico'   # calico or flannel
+  cidr: 172.31.0.0/16

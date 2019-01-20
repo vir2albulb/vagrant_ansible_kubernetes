@@ -1,0 +1,30 @@
+---
+- name: Create template of RBAC network | Calico
+  become: yes
+  become_user: "{{ kubectlUser }}"
+  template:
+    src: rbac-calico.yml.j2
+    dest: "{{ tmpDir }}/rbac-calico.yml"
+
+- name: Install RBAC network
+  become: yes
+  become_user: "{{ kubectlUser }}"
+  shell: kubectl apply -f "{{ tmpDir }}/rbac-calico.yml" >> pod_rbac_network_setup.txt
+  args:
+    chdir: $HOME
+    creates: pod_rbac_network_setup.txt
+
+- name: Create template of Calico setup
+  become: yes
+  become_user: "{{ kubectlUser }}"
+  template:
+    src: kube-calico.yml.j2
+    dest: "{{ tmpDir }}/kube-calico.yml"
+
+- name: Install pod network
+  become: yes
+  become_user: "{{ kubectlUser }}"
+  shell: kubectl apply -f "{{ tmpDir }}/kube-calico.yml" >> pod_network_setup.txt
+  args:
+    chdir: $HOME
+    creates: pod_network_setup.txt

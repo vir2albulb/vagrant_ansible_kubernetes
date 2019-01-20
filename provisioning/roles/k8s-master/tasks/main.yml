@@ -1,0 +1,49 @@
+---
+- name: Install Kubectl
+  yum:
+    name: "kubectl{{ kubernetesVersion }}"
+    state: present
+
+- name: Initialize the cluster
+  shell: kubeadm init --apiserver-advertise-address="{{ ansible_eth1.ipv4.address }}" --pod-network-cidr="{{ network.cidr }}" >> cluster_initialized.txt
+  args:
+    chdir: $HOME
+    creates: cluster_initialized.txt
+
+- name: Create user {{ kubectlUser }}
+  user:
+    name: "{{ kubectlUser }}"
+
+- name: Create .kube directory
+  become: yes
+  become_user: "{{ kubectlUser }}"
+  file:
+    path: $HOME/.kube
+    state: directory
+    mode: 0755
+
+- name: Copy admin.conf to user's kube config
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/home/{{ kubectlUser }}/.kube/config"
+    remote_src: yes
+    owner: "{{ kubectlUser }}"
+
+- name: Create temporary template directory
+  become: yes
+  become_user: "{{ kubectlUser }}"
+  tempfile:
+    state: directory
+    suffix: templates
+  register: tmp
+
+- name: Register temp directory path
+  set_fact:
+    tmpDir: "{{ tmp.path }}"
+
+- include: "deploy-{{ network.plugin }}.yml"
+
+- name: Remove temp directory
+  file:
+    state: absent
+    path: "{{ tmpDir }}"

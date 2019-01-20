@@ -1,0 +1,21 @@
+---
+- name: Install Kubernetes dependencies
+  hosts: all
+  become: yes
+  become_method: sudo
+  roles:
+    - common
+
+- name: Initialize Kubernetes cluster
+  hosts: k8s-master
+  become: yes
+  become_method: sudo
+  roles:
+    - k8s-master
+
+- name: Join nodes to Kubernetes cluster
+  hosts: all
+  become: yes
+  become_method: sudo
+  roles:
+    - k8s-node

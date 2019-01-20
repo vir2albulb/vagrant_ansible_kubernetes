@@ -1,0 +1,2 @@
+---
+kubernetesVersion: "{% if packages.kubernetes.version != '' %}-{{ packages.kubernetes.version }}{% endif %}"

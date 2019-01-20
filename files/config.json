@@ -1,0 +1,21 @@
+{
+  "box": "centos/7",
+  "box_version": "1811.02",
+  "vm_provider": "virtualbox",
+  "instances": [
+    {
+      "hostname": "master",
+      "ip_address": "192.168.33.10",
+      "cpus": "2",
+      "memory": "2048",
+      "groups": [ "k8s-master" ]
+    },
+    {
+      "hostname": "node01",
+      "ip_address": "192.168.33.11",
+      "cpus": "1",
+      "memory": "1024",
+      "groups": [ "k8s-node" ]
+    }
+  ]
+}

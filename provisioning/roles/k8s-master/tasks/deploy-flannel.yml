@@ -1,0 +1,15 @@
+---
+- name: Create template of Flannel setup
+  become: yes
+  become_user: "{{ kubectlUser }}"
+  template:
+    src: kube-flannel.yml.j2
+    dest: "{{ tmpDir }}/kube-flannel.yml"
+
+- name: Install pod network
+  become: yes
+  become_user: "{{ kubectlUser }}"
+  shell: kubectl apply -f "{{ tmpDir }}/kube-flannel.yml" >> pod_network_setup.txt
+  args:
+    chdir: $HOME
+    creates: pod_network_setup.txt
