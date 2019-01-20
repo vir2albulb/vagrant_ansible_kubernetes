@@ -96,6 +96,9 @@ network:
   cidr: 172.31.0.0/16
 ```
 
+Vagrant also distributes public key stored under ~/.ssh/id_rsa.pub to root and
+vagrant users authorized_keys file.
+
 #### Create deployment using vagrant
 
 ```shell

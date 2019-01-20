@@ -1,6 +1,4 @@
 ---
-- debug:
-    msg: "{{ ansible_all_ipv4_addresses }}"
 - name: Modify hosts file
   lineinfile:
     path: /etc/hosts
